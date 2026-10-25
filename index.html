@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MannAutomatedScanner — Automated Web Scanner</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="navbar">
+    <div class="nav-inner">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+        </svg>
+        <span>MannAutomatedScanner</span>
+      </div>
+      <nav class="nav-links">
+        <a href="#scanner">Scanner</a>
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#checks">Checks</a>
+        <a href="#about">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="badge">Open Source · Python · Live on GitHub Pages</div>
+      <h1>Automated Web<br/><span class="accent">Security Scanner</span></h1>
+      <p class="hero-sub">
+        Audit any website for missing secure headers and CORS misconfigurations
+        in seconds. Powered by a Python script that speaks plain English about your risks.
+      </p>
+      <div class="hero-cta">
+        <a href="#scanner" class="btn btn-primary">Run a Scan</a>
+        <a href="#how-it-works" class="btn btn-ghost">See How It Works</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num">12+</span><span class="stat-label">Header Checks</span></div>
+        <div class="stat"><span class="stat-num">6+</span><span class="stat-label">CORS Rules</span></div>
+        <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Free &amp; Open Source</span></div>
+      </div>
+    </div>
+    <div class="hero-terminal" aria-hidden="true">
+      <div class="terminal-bar"><span></span><span></span><span></span></div>
+      <pre class="terminal-code"><span class="t-comment"># Run the scanner</span>
+<span class="t-cmd">$</span> python scanner.py https://example.com
+
+<span class="t-section">[ Secure Headers ]</span>
+<span class="t-fail">✗  Content-Security-Policy   MISSING</span>
+<span class="t-pass">✓  Strict-Transport-Security  max-age=31536000</span>
+<span class="t-fail">✗  X-Frame-Options            MISSING</span>
+<span class="t-pass">✓  X-Content-Type-Options     nosniff</span>
+<span class="t-fail">✗  Referrer-Policy            MISSING</span>
+
+<span class="t-section">[ CORS Analysis ]</span>
+<span class="t-fail">✗  Access-Control-Allow-Origin: *  WILDCARD — HIGH RISK</span>
+<span class="t-pass">✓  No credentials leakage detected</span>
+
+<span class="t-section">[ Score: 4 / 10 ]  ⚠  Needs attention</span></pre>
+    </div>
+  </section>
+
+  <!-- LIVE SCANNER UI -->
+  <section class="section" id="scanner">
+    <div class="container">
+      <h2 class="section-title">Run a Scan</h2>
+      <p class="section-sub">Enter a URL below. The scanner will check headers &amp; CORS and display a full report.</p>
+
+      <div class="scanner-box">
+        <div class="input-row">
+          <input type="url" id="url-input" placeholder="https://example.com" autocomplete="off" />
+          <button id="scan-btn" class="btn btn-primary" onclick="runScan()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            Scan
+          </button>
+        </div>
+        <p class="scan-note">⚠ Only scan websites you own or have permission to test.</p>
+
+        <div id="scan-loader" class="scan-loader hidden">
+          <div class="spinner"></div>
+          <span>Scanning headers &amp; CORS…</span>
+        </div>
+
+        <div id="scan-results" class="scan-results hidden">
+          <div class="result-header">
+            <div>
+              <div class="result-url" id="result-url"></div>
+              <div class="result-time" id="result-time"></div>
+            </div>
+            <div class="score-badge" id="score-badge"></div>
+          </div>
+
+          <div class="result-grid">
+            <div class="result-card" id="card-headers">
+              <h3>🔒 Secure Headers</h3>
+              <ul id="headers-list"></ul>
+            </div>
+            <div class="result-card" id="card-cors">
+              <h3>🌐 CORS Analysis</h3>
+              <ul id="cors-list"></ul>
+            </div>
+          </div>
+
+          <div class="recommendations" id="recommendations"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section section-alt" id="features">
+    <div class="container">
+      <h2 class="section-title">What MannAutomatedScanner Checks</h2>
+      <p class="section-sub">Comprehensive coverage of the most exploited HTTP security weaknesses.</p>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <h3>Content-Security-Policy</h3>
+          <p>Validates the presence and quality of CSP directives to prevent XSS and data injection attacks.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔐</div>
+          <h3>Strict-Transport-Security</h3>
+          <p>Checks for HSTS header with adequate max-age, includeSubDomains, and preload directives.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🖼️</div>
+          <h3>X-Frame-Options</h3>
+          <p>Detects missing clickjacking protection to prevent embedding your site in malicious iframes.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🚫</div>
+          <h3>X-Content-Type-Options</h3>
+          <p>Checks that MIME-type sniffing is disabled to block MIME confusion attacks.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌐</div>
+          <h3>CORS Wildcard Detection</h3>
+          <p>Flags <code>Access-Control-Allow-Origin: *</code> and dangerous credential combinations.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔑</div>
+          <h3>Permissions-Policy</h3>
+          <p>Audits browser feature access controls for camera, microphone, geolocation, and more.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔗</div>
+          <h3>Referrer-Policy</h3>
+          <p>Ensures sensitive URL data isn't leaked to third parties via the Referrer header.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚠️</div>
+          <h3>CORS Method Exposure</h3>
+          <p>Detects dangerously permissive <code>Access-Control-Allow-Methods</code> like PUT and DELETE.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how-it-works">
+    <div class="container">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-sub">Three clean steps from URL to actionable security report.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h3>HTTP Request</h3>
+            <p>The Python script sends a crafted HTTP GET (and OPTIONS for CORS) request to the target URL using the <code>requests</code> library, capturing all response headers.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h3>Header &amp; CORS Analysis</h3>
+            <p>Each response header is matched against a curated ruleset. Missing headers, weak values, and dangerous CORS configurations are flagged with severity ratings.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h3>Scored Report</h3>
+            <p>A human-readable report is generated with a security score, per-check pass/fail status, and prioritised recommendations you can act on immediately.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHECKS TABLE -->
+  <section class="section section-alt" id="checks">
+    <div class="container">
+      <h2 class="section-title">Full Checks Reference</h2>
+      <p class="section-sub">Every rule the scanner applies, and why it matters.</p>
+      <div class="table-wrap">
+        <table class="checks-table">
+          <thead>
+            <tr><th>Header / Rule</th><th>Category</th><th>Severity</th><th>Why It Matters</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>Content-Security-Policy</code></td><td>Headers</td><td class="sev high">High</td><td>Mitigates XSS by whitelisting allowed content sources.</td></tr>
+            <tr><td><code>Strict-Transport-Security</code></td><td>Headers</td><td class="sev high">High</td><td>Forces HTTPS, prevents downgrade attacks.</td></tr>
+            <tr><td><code>X-Frame-Options</code></td><td>Headers</td><td class="sev med">Medium</td><td>Blocks clickjacking via iframes.</td></tr>
+            <tr><td><code>X-Content-Type-Options</code></td><td>Headers</td><td class="sev med">Medium</td><td>Stops MIME sniffing exploits.</td></tr>
+            <tr><td><code>Referrer-Policy</code></td><td>Headers</td><td class="sev low">Low</td><td>Controls referrer data leakage.</td></tr>
+            <tr><td><code>Permissions-Policy</code></td><td>Headers</td><td class="sev low">Low</td><td>Restricts browser feature access.</td></tr>
+            <tr><td><code>Cache-Control</code></td><td>Headers</td><td class="sev low">Low</td><td>Prevents caching of sensitive responses.</td></tr>
+            <tr><td><code>Access-Control-Allow-Origin: *</code></td><td>CORS</td><td class="sev high">High</td><td>Wildcard exposes API to any origin.</td></tr>
+            <tr><td>CORS + Credentials</td><td>CORS</td><td class="sev high">Critical</td><td>Wildcard + credentials = auth token theft.</td></tr>
+            <tr><td>Dangerous CORS Methods</td><td>CORS</td><td class="sev med">Medium</td><td>PUT/DELETE exposed cross-origin enables data mutation.</td></tr>
+            <tr><td>CORS Headers Exposure</td><td>CORS</td><td class="sev low">Low</td><td>Leaking custom headers aids attackers in profiling.</td></tr>
+            <tr><td>CORS Preflight Caching</td><td>CORS</td><td class="sev low">Info</td><td>Missing Max-Age forces repeated preflight requests.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT / CODE -->
+  <section class="section" id="about">
+    <div class="container about-grid">
+      <div class="about-text">
+        <h2>Built with Python</h2>
+        <p>
+          MannAutomatedScanner is a lightweight Python script that uses only the standard <code>requests</code>
+          library. It can be run directly from the command line or exposed as a REST endpoint via Flask.
+          No databases, no agents — just a clean audit of what your server is (and isn't) sending.
+        </p>
+        <p>
+          The Flask API wraps the scanner and powers this frontend, accepting a URL via POST and
+          returning structured JSON results. The entire tool can be self-hosted in minutes.
+        </p>
+        <div class="tech-pills">
+          <span>Python 3.10+</span>
+          <span>Flask</span>
+          <span>requests</span>
+          <span>HTML5</span>
+          <span>CSS3</span>
+          <span>Vanilla JS</span>
+        </div>
+      </div>
+      <div class="about-code">
+        <div class="terminal-bar"><span></span><span></span><span></span></div>
+        <pre class="terminal-code"><span class="t-comment"># Install dependencies</span>
+<span class="t-cmd">$</span> pip install -r requirements.txt
+
+<span class="t-comment"># Scan from CLI</span>
+<span class="t-cmd">$</span> python scanner.py https://yoursite.com
+
+<span class="t-comment"># Start the web server</span>
+<span class="t-cmd">$</span> python app.py
+<span class="t-pass"> * Running on http://127.0.0.1:5000</span>
+
+<span class="t-comment"># API — POST /scan</span>
+<span class="t-cmd">$</span> curl -X POST http://localhost:5000/scan \
+     -H "Content-Type: application/json" \
+     -d '{"url":"https://example.com"}'</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="brand brand-footer">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+        </svg>
+        <span>MannAutomatedScanner</span>
+      </div>
+      <p class="footer-note">Automated Web Scanner — Audit sites for secure headers &amp; CORS flaws. For authorised use only.</p>
+      <p class="footer-copy">&copy; 2025 MannAutomatedScanner. Built with Python &amp; JavaScript.</p>
+    </div>
+  </footer>
+
+  <script>
+    /* ==========================================================
+       MannAutomatedScanner — 100% Client-Side Scanner
+       Works on GitHub Pages — no server / Flask required.
+       Uses allorigins.win as a CORS proxy to fetch response
+       headers from the target URL.
+       ========================================================== */
+
+    /* ── Security header ruleset ── */
+    const SECURE_HEADERS = [
+      { name: "Content-Security-Policy",   severity: "high",   recommendation: "Add a Content-Security-Policy header to restrict allowed content sources and mitigate XSS attacks." },
+      { name: "Strict-Transport-Security", severity: "high",   recommendation: "Add HSTS: Strict-Transport-Security: max-age=31536000; includeSubDomains; preload" },
+      { name: "X-Frame-Options",           severity: "medium", recommendation: "Add X-Frame-Options: DENY or SAMEORIGIN to prevent clickjacking." },
+      { name: "X-Content-Type-Options",    severity: "medium", recommendation: "Add X-Content-Type-Options: nosniff to stop MIME-type sniffing." },
+      { name: "Referrer-Policy",           severity: "low",    recommendation: "Add Referrer-Policy: strict-origin-when-cross-origin to control referrer leakage." },
+      { name: "Permissions-Policy",        severity: "low",    recommendation: "Add a Permissions-Policy header to restrict browser API access (camera, mic, geolocation)." },
+      { name: "Cache-Control",             severity: "low",    recommendation: "Set Cache-Control: no-store on sensitive endpoints to prevent caching of private data." },
+    ];
+
+    /* ── Helpers ── */
+    function $(id) { return document.getElementById(id); }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+    }
+
+    function formatDate(isoStr) {
+      try {
+        return new Date(isoStr).toLocaleString(undefined, {
+          year:"numeric", month:"short", day:"numeric",
+          hour:"2-digit", minute:"2-digit", second:"2-digit",
+        });
+      } catch { return isoStr; }
+    }
+
+    function scoreClass(score, max) {
+      const pct = max > 0 ? (score / max) * 100 : 0;
+      if (pct >= 70) return "score-good";
+      if (pct >= 40) return "score-warn";
+      return "score-bad";
+    }
+
+    function statusClass(s) { return s === "pass" ? "status-pass" : s === "fail" ? "status-fail" : "status-warn"; }
+    function statusLabel(s)  { return s === "pass" ? "PASS" : s === "fail" ? "FAIL" : "WARN"; }
+
+    /* ── CORS analysis (pure JS, mirrors analyse_cors() in Python) ── */
+    function analyseCors(headers) {
+      const issues = [];
+      const acao = headers["access-control-allow-origin"] || "";
+      const acac = (headers["access-control-allow-credentials"] || "").toLowerCase();
+      const acam = headers["access-control-allow-methods"] || "";
+      const acma = headers["access-control-max-age"] || "";
+
+      if (acao === "*") {
+        issues.push({ name: "Wildcard Origin (ACAO: *)", status: "fail", severity: "high",
+          detail: "Access-Control-Allow-Origin: * exposes the API to any origin.",
+          recommendation: "Replace * with a specific trusted origin." });
+      } else if (acao) {
+        try {
+          const u = new URL(acao);
+          if (u.protocol === "http:" || u.protocol === "https:") {
+            issues.push({ name: "Scoped ACAO", status: "pass", severity: "info",
+              detail: `Access-Control-Allow-Origin is restricted to: ${acao}`, recommendation: "" });
+          } else {
+            issues.push({ name: "Invalid ACAO Origin", status: "warn", severity: "medium",
+              detail: `ACAO value '${acao}' is not a valid HTTP/HTTPS origin.`,
+              recommendation: "Ensure the value is a full origin like https://trusted.com" });
+          }
+        } catch {
+          issues.push({ name: "Invalid ACAO Origin", status: "warn", severity: "medium",
+            detail: `ACAO value '${acao}' could not be parsed.`,
+            recommendation: "Ensure the value is a full origin like https://trusted.com" });
+        }
+      }
+
+      if (acao === "*" && acac === "true") {
+        issues.push({ name: "Wildcard + Credentials", status: "fail", severity: "critical",
+          detail: "CRITICAL: Wildcard + credentials:true allows any site to make credentialed requests.",
+          recommendation: "Never combine ACAO: * with Access-Control-Allow-Credentials: true." });
+      } else if (acac === "true") {
+        issues.push({ name: "Credentials Allowed", status: "warn", severity: "medium",
+          detail: "Credentials are allowed cross-origin. Ensure origin is tightly scoped.",
+          recommendation: "Review whether credentials are truly needed cross-origin." });
+      }
+
+      const dangerous = acam.toUpperCase().split(",").map(m => m.trim()).filter(m => ["PUT","DELETE","PATCH"].includes(m));
+      if (dangerous.length) {
+        issues.push({ name: "Dangerous CORS Methods", status: "warn", severity: "medium",
+          detail: `Dangerous methods exposed via CORS: ${dangerous.join(", ")}`,
+          recommendation: "Remove methods that don't need to be cross-origin accessible." });
+      }
+
+      if (acao && !acma) {
+        issues.push({ name: "No Preflight Cache (Max-Age)", status: "warn", severity: "info",
+          detail: "Access-Control-Max-Age not set — browsers preflight on every CORS request.",
+          recommendation: "Add Access-Control-Max-Age: 86400 to cache preflight results." });
+      }
+
+      if (!acao) {
+        issues.push({ name: "No CORS Headers", status: "pass", severity: "info",
+          detail: "No CORS headers — cross-origin requests are blocked by default.",
+          recommendation: "" });
+      }
+
+      return issues;
+    }
+
+    /* ── Core scanner — fetches real headers via CORS proxy ── */
+
+    // Normalise a headers object to lowercase keys, flatten arrays
+    function normaliseHeaders(obj) {
+      const out = {};
+      for (const [k, v] of Object.entries(obj || {})) {
+        out[k.toLowerCase()] = Array.isArray(v) ? v.join(", ") : String(v);
+      }
+      return out;
+    }
+
+    // Strategy 1: corsproxy.io — returns a plain proxied response,
+    // so we read the real HTTP headers from the fetch() Response object.
+    async function fetchViaCorsproxy(url) {
+      const proxy = `https://corsproxy.io/?url=${encodeURIComponent(url)}`;
+      const resp  = await fetch(proxy, { signal: AbortSignal.timeout(18000) });
+      // resp.headers are the PROXIED response headers from the target
+      const raw = {};
+      resp.headers.forEach((v, k) => { raw[k.toLowerCase()] = v; });
+      return { headers: raw, statusCode: resp.status };
+    }
+
+    // Strategy 2: allorigins.win — JSON wrapper, returns headers in json.headers
+    async function fetchViaAllorigins(url) {
+      const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+      const resp  = await fetch(proxy, { signal: AbortSignal.timeout(18000) });
+      if (!resp.ok) throw new Error(`allorigins HTTP ${resp.status}`);
+      const json  = await resp.json();
+      return {
+        headers: normaliseHeaders(json.headers || {}),
+        statusCode: json.status?.http_code ?? "?",
+      };
+    }
+
+    // Strategy 3: api.codetabs.com — returns headers array [{name,value}]
+    async function fetchViaCodetabs(url) {
+      const proxy = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`;
+      const resp  = await fetch(proxy, { signal: AbortSignal.timeout(18000) });
+      // codetabs returns the raw response — read its headers
+      const raw = {};
+      resp.headers.forEach((v, k) => { raw[k.toLowerCase()] = v; });
+      return { headers: raw, statusCode: resp.status };
+    }
+
+    async function scanUrl(url) {
+      let headers = {};
+      let statusCode = "?";
+      let proxyUsed = "";
+      let lastErr = null;
+
+      // Try each strategy in order, stop at first success
+      const strategies = [
+        { name: "corsproxy.io",        fn: () => fetchViaCorsproxy(url) },
+        { name: "allorigins.win",      fn: () => fetchViaAllorigins(url) },
+        { name: "codetabs.com",        fn: () => fetchViaCodetabs(url) },
+      ];
+
+      for (const s of strategies) {
+        try {
+          const result = await s.fn();
+          headers    = result.headers;
+          statusCode = result.statusCode;
+          proxyUsed  = s.name;
+
+          // Sanity check — if we got at least a content-type or server header,
+          // we have real target headers (not just the proxy's own headers)
+          const hasRealHeaders = headers["content-type"] || headers["server"]
+            || headers["x-frame-options"] || headers["strict-transport-security"]
+            || headers["content-security-policy"] || headers["cache-control"];
+          if (hasRealHeaders) break;
+
+          // Got a response but no recognisable target headers — try next proxy
+          lastErr = new Error(`${s.name}: response had no recognisable target headers`);
+        } catch (e) {
+          lastErr = e;
+          // continue to next strategy
+        }
+      }
+
+      if (!proxyUsed && lastErr) throw lastErr;
+
+      // Evaluate secure headers against real headers
+      let score = 0;
+      const headerChecks = SECURE_HEADERS.map(rule => {
+        const key   = rule.name.toLowerCase();
+        const value = headers[key] || null;
+        if (value) score++;
+        return {
+          name: rule.name,
+          status: value ? "pass" : "fail",
+          severity: rule.severity,
+          value,
+          recommendation: value ? "" : rule.recommendation,
+        };
+      });
+
+      const corsChecks = analyseCors(headers);
+
+      return {
+        url,
+        scanned_at: new Date().toISOString(),
+        status_code: statusCode,
+        score,
+        max_score: SECURE_HEADERS.length,
+        header_checks: headerChecks,
+        cors_checks: corsChecks,
+        proxy_used: proxyUsed,
+        error: null,
+      };
+    }
+
+    /* ── Render results ── */
+    function renderResults(data) {
+      if (data.error) {
+        $("scan-results").classList.remove("hidden");
+        $("scan-results").innerHTML = `<div style="color:#f85149;padding:20px;text-align:center;"><strong>Scan Error:</strong> ${escapeHtml(data.error)}<br><small style="color:#8b949e;">Try a different URL or check your connection.</small></div>`;
+        return;
+      }
+
+      $("result-url").textContent = data.url;
+      $("result-time").textContent = `Scanned at ${formatDate(data.scanned_at)}  ·  HTTP ${data.status_code || "?"}${data.proxy_used ? "  ·  via " + data.proxy_used : ""}`;
+
+      const badge = $("score-badge");
+      badge.textContent = `${data.score} / ${data.max_score}`;
+      badge.className = `score-badge ${scoreClass(data.score, data.max_score)}`;
+
+      const headersList = $("headers-list");
+      headersList.innerHTML = "";
+      for (const chk of data.header_checks) {
+        const li = document.createElement("li");
+        li.title = chk.value || "Missing";
+        li.innerHTML = `<span class="check-name">${escapeHtml(chk.name)}</span><span class="check-status ${statusClass(chk.status)}">${statusLabel(chk.status)}</span>`;
+        headersList.appendChild(li);
+      }
+
+      const corsList = $("cors-list");
+      corsList.innerHTML = "";
+      for (const chk of data.cors_checks) {
+        const li = document.createElement("li");
+        li.innerHTML = `<span class="check-name" title="${escapeHtml(chk.detail||"")}">${escapeHtml(chk.name)}</span><span class="check-status ${statusClass(chk.status)}">${statusLabel(chk.status)}</span>`;
+        corsList.appendChild(li);
+      }
+
+      const recs = [...(data.header_checks||[]), ...(data.cors_checks||[])].filter(c => c.recommendation).map(c => c.recommendation);
+      const recBox = $("recommendations");
+      if (recs.length > 0) {
+        recBox.innerHTML = `<h4>Recommendations (${recs.length})</h4><ul>${recs.map(r => `<li>${escapeHtml(r)}</li>`).join("")}</ul>`;
+        recBox.style.display = "";
+      } else {
+        recBox.style.display = "none";
+      }
+
+      $("scan-results").classList.remove("hidden");
+    }
+
+    /* ── Main scan handler ── */
+    async function runScan() {
+      const input = $("url-input");
+      let url = input.value.trim();
+
+      if (!url) {
+        input.focus();
+        input.style.borderColor = "#f85149";
+        setTimeout(() => { input.style.borderColor = ""; }, 1500);
+        return;
+      }
+
+      if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        url = "https://" + url;
+        input.value = url;
+      }
+
+      $("scan-loader").classList.remove("hidden");
+      $("scan-results").classList.add("hidden");
+      $("scan-btn").disabled = true;
+
+      try {
+        const data = await scanUrl(url);
+        renderResults(data);
+      } catch (err) {
+        renderResults({ error: err.message || "Unknown error", url });
+      } finally {
+        $("scan-loader").classList.add("hidden");
+        $("scan-btn").disabled = false;
+        $("scan-results").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    /* ── Enter key ── */
+    document.addEventListener("DOMContentLoaded", () => {
+      const input = $("url-input");
+      if (input) input.addEventListener("keydown", e => { if (e.key === "Enter") runScan(); });
+    });
+  </script>
+</body>
+</html>
